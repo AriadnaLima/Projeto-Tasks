@@ -5,7 +5,7 @@ import { collection, addDoc, Timestamp, getDocs } from 'firebase/firestore'
 export const createTask = async (data) => {
     try {
         await addDoc(collection(db, 'tasks'), {
-            title: 'Task'
+            title: data.title
         })
        
     }catch(err) {

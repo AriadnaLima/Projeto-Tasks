@@ -5,24 +5,28 @@ import { Modal, Button } from "react-bootstrap";
 import { createTask, listTasks } from "../Services/TaskServices/TaskService";
 
 
-export default function Content () {
+export default function Content() {
     const [show, setShow] = useState(false);
-    
+    const [groupTitle, setGroupTitle] = useState('')
+    const [groupList, setGroupList] = useState()
+
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
 
-    useEffect(async () =>{
-    // await createTask()
-        const resp = await listTasks ();
-        console.log(resp)
+    useEffect(async () => {
+        await createTask()
+        const resp = await listTasks();
+        setGroupList(resp)
 
     }, [])
 
-    const groupInitial = {
-        groupName: ' '
+    async function addTask() {
+        let data = {
+            title: groupTitle
+        }
+        await createTask(data)
+        setGroupTitle('')
     }
-
-    let [group, setGroup] = useState(groupInitial)
 
     return (
         <div className="body-content">
@@ -34,25 +38,29 @@ export default function Content () {
                 <Modal.Body>
                     <span>Nome do Grupo de Atividades</span>
                     <input className="form-control" placeholder="Nome do Grupo"
-                        name="groupName" value={group.groupName}></input>
+                        name="groupName" value={groupTitle}
+                        onChange={e => setGroupTitle(e.target.value)}></input>
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant="secondary" onClick={handleClose}>
                         Voltar
                     </Button>
-                    <Button variant="primary" onClick={handleClose}>
+                    <Button variant="primary" onClick={() => { handleClose(); addTask(); }}>
                         Salvar Novo Grupo
                     </Button>
                 </Modal.Footer>
             </Modal>
 
             <div style={{ display: "flex", flexWrap: "wrap" }}>
-                <ContentCard />
-                <ContentCard />
-
+                {
+                    groupList?.map(item => {
+                        console.log(item)
+                        return <ContentCard/>
+                    })
+                }
                 <div>
                     <Button variant="primary" onClick={handleShow}>Novo Grupo</Button>
-                   
+
                 </div>
             </div>
 

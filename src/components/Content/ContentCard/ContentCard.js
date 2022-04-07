@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react'
 import { Modal, Button } from "react-bootstrap";
 import Card from './Card/Card'
 
-export default function ContentCard() {
+export default function ContentCard(props) {
 
-
+  console.log(props.id)
   const [show, setShow] = useState(false);
 
   const handleClose = () => setShow(false);
@@ -41,7 +41,7 @@ export default function ContentCard() {
 
       <div className="m-3 bg-light text-dark border border-dark" style={{ width: "200px" }}>
         <div className='p-2 mb-0 bg-primary text-white'>
-          Nome do grupo
+          {props.title}
         </div>
 
         <div className="p-2 m-2" >

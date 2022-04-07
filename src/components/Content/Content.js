@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import './Content.css';
 import ContentCard from "./ContentCard/ContentCard";
 import { Modal, Button } from "react-bootstrap";
-import { createTask, listTasks } from "../Services/TaskServices/TaskService";
+import { createTask, listTasks, removeTask } from "../Services/TaskServices/TaskService";
 
 
 export default function Content() {
@@ -14,8 +14,8 @@ export default function Content() {
     const handleShow = () => setShow(true);
 
     useEffect(async () => {
-        await createTask()
-        const resp = await listTasks();
+        const resp = await listTasks(); 
+        await removeTask();
         setGroupList(resp)
 
     }, [])
@@ -54,8 +54,7 @@ export default function Content() {
             <div style={{ display: "flex", flexWrap: "wrap" }}>
                 {
                     groupList?.map(item => {
-                        console.log(item)
-                        return <ContentCard/>
+                        return <ContentCard title={item.title} id={item.id}/>
                     })
                 }
                 <div>

@@ -2,30 +2,47 @@ import React, { useState, useEffect } from "react";
 import './Content.css';
 import ContentCard from "./ContentCard/ContentCard";
 import { Modal, Button } from "react-bootstrap";
-import { createTask, listTasks, removeTask } from "../Services/TaskServices/TaskService";
+import { createGroup, listGroups, removeGroup } from "../Services/GroupServices/GroupService";
 
 
 export default function Content() {
     const [show, setShow] = useState(false);
     const [groupTitle, setGroupTitle] = useState('')
     const [groupList, setGroupList] = useState()
+    const [refList, setRefList] = useState(true)
 
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
 
-    useEffect(async () => {
-        const resp = await listTasks(); 
-        await removeTask();
-        setGroupList(resp)
+    async function handleList() {
+        if (refList) {
+            const resp = await listGroups();
+            setGroupList(resp)
+            setRefList(false)
+            
+        }
+    }
 
-    }, [])
 
-    async function addTask() {
+    useEffect(() => {
+        handleList()
+
+    }, [refList])
+
+
+
+    function refresh(value) {
+        setRefList(value)
+    }
+
+
+    async function addGroup() {
         let data = {
             title: groupTitle
         }
-        await createTask(data)
+        await createGroup(data)
         setGroupTitle('')
+        setRefList(true)
     }
 
     return (
@@ -45,7 +62,7 @@ export default function Content() {
                     <Button variant="secondary" onClick={handleClose}>
                         Voltar
                     </Button>
-                    <Button variant="primary" onClick={() => { handleClose(); addTask(); }}>
+                    <Button variant="primary" onClick={() => { handleClose(); addGroup(); }}>
                         Salvar Novo Grupo
                     </Button>
                 </Modal.Footer>
@@ -53,11 +70,11 @@ export default function Content() {
 
             <div style={{ display: "flex", flexWrap: "wrap" }}>
                 {
-                    groupList?.map(item => {
-                        return <ContentCard title={item.title} id={item.id}/>
+                    groupList?.map((item, index) => {
+                        return <ContentCard key={index} title={item.title} id={item.id} refresh={refresh} />
                     })
                 }
-                <div>
+                <div className="m-3">
                     <Button variant="primary" onClick={handleShow}>Novo Grupo</Button>
 
                 </div>

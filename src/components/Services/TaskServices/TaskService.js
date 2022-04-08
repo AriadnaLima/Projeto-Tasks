@@ -1,20 +1,19 @@
-import {db} from '../../../database/firebase'
+import {db} from '../../../Firebase/Firebase'
 import { collection, addDoc, Timestamp, getDocs, deleteDoc, doc } from 'firebase/firestore'
 
-
 export const createTask = async (data) => {
-    try {
-        await addDoc(collection(db, 'tasks'), {
-            title: data.title
-        })
-       
-    }catch(err) {
-        console.log(err)
-    }
+ try {
+     await addDoc(collection(db, 'tasks'), { 
+         body: data.body,
+         group: data.group
+     })
+ }catch(err) {
+     console.log(err)
+ }
 
 }
 
-export const listTasks = async () => {
+export const listTasks = async () => { 
     try{
         const resp = await getDocs(collection(db, 'tasks'))
         return resp.docs.map(doc => {
@@ -27,13 +26,10 @@ export const listTasks = async () => {
     }
 }
 
-
-export const removeTask = async (id) => {
+export const removeTask = async (data) => {
     try {
-        await deleteDoc(doc(db, 'tasks', id))
-       
+        await deleteDoc(doc(db, 'tasks', id));
     }catch(err) {
         console.log(err)
     }
-
 }

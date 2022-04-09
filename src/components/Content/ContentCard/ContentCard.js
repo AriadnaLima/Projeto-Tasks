@@ -7,7 +7,7 @@ import {createTask, listTasks, removeTask } from "../../Services/TaskServices/Ta
 
 export default function ContentCard(props) {
   const [show, setShow] = useState(false);
-  const [taskTitle, setTaskTitle] = useState('')
+  const [taskBody, setTaskBody] = useState('')
   const [taskList, setTaskList] = useState()
   const [refList, setRefList] = useState(true)
 
@@ -17,7 +17,7 @@ export default function ContentCard(props) {
 
   async function handleList() {
     if (refList) {
-      const resp = await listTasks();
+      const resp = await listTasks(props.id);
       setTaskList(resp)
       setRefList(false)
 
@@ -29,21 +29,23 @@ export default function ContentCard(props) {
 
   }, [refList])
 
-  function refresh(value) {
+  function refreshTaskList(value) {
     setRefList(value)
   }
 
+ //Informar para o pai(Content) atualizar a listagem de grupos 
   async function handleRemoveGroup() {
     await removeGroup(props.id)
-    props.refresh(true)
+    props.refreshGroupList(true)
   }
 
   async function addTask() {
     let data = {
-      body: taskTitle
+      body: taskBody,
+      group: props.id
     }
     await createTask(data)
-    setTaskTitle('')
+    setTaskBody('')
     setRefList(true)
   }
 
@@ -54,23 +56,26 @@ export default function ContentCard(props) {
         <Modal.Header closeButton>
           <Modal.Title>Nova Tarefa</Modal.Title>
         </Modal.Header>
-        <Modal.Body>
+        <Modal.Body >
           <span>Nome da tarefa</span>
           <input className="form-control" placeholder="Nome da Tarefa"
-            name="taskName" value={taskTitle}
-            onChange={e => setTaskTitle(e.target.value)}></input>
+            name="taskName" value={taskBody}
+            onChange={e => setTaskBody(e.target.value)}></input>
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleClose}>
             Voltar
           </Button>
-          <Button variant="primary" onClick={handleClose}>
+          <Button variant="primary" onClick={() =>{
+            handleClose();
+            addTask();
+            }}>
             Salvar Nova Tarefa
           </Button>
         </Modal.Footer>
       </Modal>
 
-      <div className="m-3 bg-light text-dark border border-dark" style={{ width: "200px" }}>
+      <div className="m-3 bg-light text-dark border border-dark rounded-4" style={{ width: "200px" }}>
 
         <div className='p-2 mb-0 bg-primary text-white '>
           {props.title}
@@ -80,10 +85,17 @@ export default function ContentCard(props) {
 
         <div className="p-2 m-2" >
           {taskList?.map((item, index) => {
-            return <Card key={index} body={item.body} group={item.group} id={item.id} refresh={refresh} />
+            return <Card 
+            key={index} 
+            body={item.body} 
+            group={item.group} 
+            id={item.id} 
+            refreshTaskList={refreshTaskList}/>
           })
           }
+          <div className="mt-3 d-flex justify-content-center">
           <Button variant="primary" onClick={handleShow}>Novo Tarefa</Button>
+          </div>
         </div>
 
       </div>

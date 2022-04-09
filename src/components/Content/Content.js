@@ -31,7 +31,7 @@ export default function Content() {
 
 
 
-    function refresh(value) {
+    function refreshGroupList(value) {
         setRefList(value)
     }
 
@@ -55,14 +55,17 @@ export default function Content() {
                 <Modal.Body>
                     <span>Nome do Grupo de Atividades</span>
                     <input className="form-control" placeholder="Nome do Grupo"
-                        name="groupName" value={groupTitle}
+                         value={groupTitle}
                         onChange={e => setGroupTitle(e.target.value)}></input>
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant="secondary" onClick={handleClose}>
                         Voltar
                     </Button>
-                    <Button variant="primary" onClick={() => { handleClose(); addGroup(); }}>
+                    <Button variant="primary" onClick={() => { 
+                        handleClose(); 
+                        addGroup(); 
+                        }}>
                         Salvar Novo Grupo
                     </Button>
                 </Modal.Footer>
@@ -71,7 +74,11 @@ export default function Content() {
             <div style={{ display: "flex", flexWrap: "wrap" }}>
                 {
                     groupList?.map((item, index) => {
-                        return <ContentCard key={index} title={item.title} id={item.id} refresh={refresh} />
+                        return <ContentCard 
+                        key={index} 
+                        title={item.title} 
+                        id={item.id} 
+                        refreshGroupList={refreshGroupList} />
                     })
                 }
                 <div className="m-3">

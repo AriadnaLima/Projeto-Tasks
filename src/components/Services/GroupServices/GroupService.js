@@ -1,5 +1,5 @@
 import {db} from '../../../Firebase/Firebase'
-import { collection, addDoc, Timestamp, getDocs, deleteDoc, doc } from 'firebase/firestore'
+import { collection, addDoc, Timestamp, getDocs, deleteDoc, doc, updateDoc } from 'firebase/firestore'
 
 
 export const createGroup = async (data) => {
@@ -31,10 +31,20 @@ export const listGroups = async () => {
 export const removeGroup = async (id) => {
     
     try {
-        await deleteDoc(doc(db, 'groups', id))
-       
+        await deleteDoc(doc(db, 'groups', id))       
     }catch(err) {
         console.log(err)
     }
 
+}
+
+
+export const editGroup = async (data) => {
+    try {
+        await updateDoc(doc(db, 'groups', data.id), {
+            title: data.title
+        })
+    }catch(err) { 
+        console.log(err)
+    }
 }

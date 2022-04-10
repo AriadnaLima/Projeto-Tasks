@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import { Modal, Button, CloseButton } from "react-bootstrap";
 import Card from './Card/Card'
-import {removeGroup } from "../../Services/GroupServices/GroupService"
-import {createTask, listTasks, removeTask } from "../../Services/TaskServices/TaskService"
+import { removeGroup, editGroup } from "../../Services/GroupServices/GroupService"
+import { createTask, listTasks, removeTask } from "../../Services/TaskServices/TaskService"
 
 
 export default function ContentCard(props) {
@@ -10,6 +10,8 @@ export default function ContentCard(props) {
   const [taskBody, setTaskBody] = useState('')
   const [taskList, setTaskList] = useState()
   const [refList, setRefList] = useState(true)
+  const [updateGroup, setUpdateGroup] = useState()
+  const [editTitleGroup, setEditTitleGroup] = useState(false)
 
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
@@ -33,7 +35,7 @@ export default function ContentCard(props) {
     setRefList(value)
   }
 
- //Informar para o pai(Content) atualizar a listagem de grupos 
+  //Informar para o pai(Content) atualizar a listagem de grupos 
   async function handleRemoveGroup() {
     await removeGroup(props.id)
     props.refreshGroupList(true)
@@ -48,6 +50,27 @@ export default function ContentCard(props) {
     setTaskBody('')
     setRefList(true)
   }
+
+
+  async function handleEditGroup() {
+    let data = {
+      id: props.id,
+      title: updateGroup,
+    }
+    await editGroup(data)
+    props.refreshGroupList(true)
+  }
+
+
+  async function handleKey (e){
+    if (e.key === 'Escape') {
+      setEditTitleGroup(false)
+    } else if (e.key === 'Enter') {
+      handleEditGroup()
+      setEditTitleGroup(false)
+    }
+  }
+
 
   return (
     <div>
@@ -66,35 +89,45 @@ export default function ContentCard(props) {
           <Button variant="secondary" onClick={handleClose}>
             Voltar
           </Button>
-          <Button variant="primary" onClick={() =>{
+          <Button variant="primary" onClick={() => {
             handleClose();
             addTask();
-            }}>
+          }}>
             Salvar Nova Tarefa
           </Button>
         </Modal.Footer>
       </Modal>
 
-      <div className="m-3 bg-light text-dark border border-dark rounded-4" style={{ width: "200px" }}>
+      <div className="m-3 bg-light text-dark border border-dark rounded-3" style={{ width: "200px" }}>
 
         <div className='p-2 mb-0 bg-primary text-white '>
-          {props.title}
-          <CloseButton variant="white" aria-label="Hide" style={{ float: "right" }} onClick={handleRemoveGroup} />
 
+          <div onClick={() => {setEditTitleGroup(true); setUpdateGroup(props.title); }}>
+            {editTitleGroup ?
+              <input
+                value={updateGroup}
+                onKeyUp={handleKey}
+                onChange={(e) => setUpdateGroup(e.target.value)}
+                className='bg-primary text-white'
+                style={{ width: '75%', border: "none" }}
+              /> :
+              props.title}
+            <CloseButton variant="white" aria-label="Hide" style={{ float: "right" }} onClick={handleRemoveGroup} /></div>
         </div>
 
         <div className="p-2 m-2" >
           {taskList?.map((item, index) => {
-            return <Card 
-            key={index} 
-            body={item.body} 
-            group={item.group} 
-            id={item.id} 
-            refreshTaskList={refreshTaskList}/>
+            console.log(props.title, item.id)
+            return <Card
+              key={index}
+              body={item.body}
+              group={item.group}
+              id={item.id}
+              refreshTaskList={refreshTaskList} />
           })
           }
           <div className="mt-3 d-flex justify-content-center">
-          <Button variant="primary" onClick={handleShow}>Novo Tarefa</Button>
+            <Button variant="primary" onClick={handleShow}>Novo Tarefa</Button>
           </div>
         </div>
 
@@ -105,4 +138,3 @@ export default function ContentCard(props) {
 }
 
 
-//falta apenas criar a lógica de criar a task 

@@ -3,7 +3,7 @@ import './Content.css';
 import ContentCard from "./ContentCard/ContentCard";
 import { Modal, Button } from "react-bootstrap";
 import { createGroup, listGroups, removeGroup } from "../Services/GroupServices/GroupService";
-import {listTasks} from "../Services/TaskServices/TaskService"
+import { listTasks } from "../Services/TaskServices/TaskService"
 
 
 export default function Content() {
@@ -12,6 +12,7 @@ export default function Content() {
     const [groupList, setGroupList] = useState()
     const [taskList, setTaskList] = useState()
     const [refList, setRefList] = useState(true)
+    const [refListTask, setRefListTask] = useState(true)
 
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
@@ -22,17 +23,17 @@ export default function Content() {
             const resp = await listGroups();
             setGroupList(resp)
             setRefList(false)
-            
+
         }
     }
 
     async function handleListTask() {
-        if (refList) {
-          const resp = await listTasks();
-          setTaskList(resp)
-    
+        if (refListTask) {
+            const resp = await listTasks();
+            setTaskList(resp)
+            setRefListTask(false)
         }
-      }
+    }
 
     useEffect(() => {
         handleList()
@@ -40,13 +41,16 @@ export default function Content() {
 
     useEffect(() => {
         handleListTask()
-    }, [])
+    }, [refListTask])
 
 
     function refreshGroupList(value) {
         setRefList(value)
     }
 
+    function refreshTaskList(value) {
+        setRefListTask(value)
+    }
 
     async function addGroup() {
         let data = {
@@ -57,10 +61,10 @@ export default function Content() {
         setRefList(true)
     }
 
-    function moveTask(task, groupId){
+    function moveTask(task, groupId) {
         let newArray = [...taskList]
         const index = newArray.map(object => object.id).indexOf(task.id)
-        newArray[index] = {...newArray[index], group: groupId}
+        newArray[index] = { ...newArray[index], group: groupId }
         setTaskList(newArray)
     }
 
@@ -76,17 +80,17 @@ export default function Content() {
                 <Modal.Body>
                     <span>Nome do Grupo de Atividades</span>
                     <input className="form-control" placeholder="Nome do Grupo"
-                         value={groupTitle}
+                        value={groupTitle}
                         onChange={e => setGroupTitle(e.target.value)}></input>
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant="secondary" onClick={handleClose}>
                         Voltar
                     </Button>
-                    <Button variant="primary" onClick={() => { 
-                        handleClose(); 
-                        addGroup(); 
-                        }}>
+                    <Button variant="primary" onClick={() => {
+                        handleClose();
+                        addGroup();
+                    }}>
                         Salvar Novo Grupo
                     </Button>
                 </Modal.Footer>
@@ -95,13 +99,14 @@ export default function Content() {
             <div style={{ display: "flex", flexWrap: "wrap" }}>
                 {
                     groupList?.map((item, index) => {
-                        return <ContentCard 
-                        key={index} 
-                        title={item.title} 
-                        id={item.id} 
-                        refreshGroupList={refreshGroupList}
-                        taskList={taskList}
-                        moveTask={moveTask} />
+                        return <ContentCard
+                            key={index}
+                            title={item.title}
+                            id={item.id}
+                            refreshGroupList={refreshGroupList}
+                            refreshTaskList={refreshTaskList}
+                            taskList={taskList}
+                            moveTask={moveTask} />
                     })
                 }
                 <div className="m-3">

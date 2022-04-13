@@ -9,7 +9,6 @@ import { createTask, listTasks, moveTask, removeTask } from "../../Services/Task
 export default function ContentCard(props) {
   const [show, setShow] = useState(false);
   const [taskBody, setTaskBody] = useState('')
-  const [refList, setRefList] = useState(true)
   const [updateGroup, setUpdateGroup] = useState()
   const [editTitleGroup, setEditTitleGroup] = useState(false)
 
@@ -29,9 +28,7 @@ export default function ContentCard(props) {
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
 
-  function refreshTaskList(value) {
-    setRefList(value)
-  }
+  
 
   //Informar para o pai(Content) atualizar a listagem de grupos 
   async function handleRemoveGroup() {
@@ -46,7 +43,7 @@ export default function ContentCard(props) {
     }
     await createTask(data)
     setTaskBody('')
-    setRefList(true)
+    props.refreshTaskList(true)
   }
 
 
@@ -114,7 +111,12 @@ export default function ContentCard(props) {
                 style={{ width: '75%', border: "none" }}
               /> :
               props.title}
-            <CloseButton variant="white" aria-label="Hide" style={{ float: "right" }} onClick={handleRemoveGroup} /></div>
+
+            <CloseButton 
+            variant="white" 
+            aria-label="Hide" 
+            style={{ float: "right" }} 
+            onClick={handleRemoveGroup} /></div>
         </div>
 
         <div className="p-2 m-2" >
@@ -125,7 +127,7 @@ export default function ContentCard(props) {
               body={item.body}
               group={item.group}
               id={item.id}
-              refreshTaskList={refreshTaskList} />
+              refreshTaskList={props.refreshTaskList} />
             }
           })
           }

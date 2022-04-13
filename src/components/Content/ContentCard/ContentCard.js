@@ -1,35 +1,33 @@
 import React, { useState, useEffect } from 'react'
+import { useDrop } from 'react-dnd'
 import { Modal, Button, CloseButton } from "react-bootstrap";
 import Card from './Card/Card'
 import { removeGroup, editGroup } from "../../Services/GroupServices/GroupService"
-import { createTask, listTasks, removeTask } from "../../Services/TaskServices/TaskService"
+import { createTask, listTasks, moveTask, removeTask } from "../../Services/TaskServices/TaskService"
 
 
 export default function ContentCard(props) {
   const [show, setShow] = useState(false);
   const [taskBody, setTaskBody] = useState('')
-  const [taskList, setTaskList] = useState()
   const [refList, setRefList] = useState(true)
   const [updateGroup, setUpdateGroup] = useState()
   const [editTitleGroup, setEditTitleGroup] = useState(false)
 
-  const handleClose = () => setShow(false);
-  const handleShow = () => setShow(true);
 
-
-  async function handleList() {
-    if (refList) {
-      const resp = await listTasks(props.id);
-      setTaskList(resp)
-      setRefList(false)
-
-    }
+  async function handleMoveTask(task) {
+    props.moveTask(task, props.id)
+    await moveTask({ id: task.id, group: props.id });
   }
 
-  useEffect(() => {
-    handleList()
+  const [, dropRef] = useDrop({
+    accept: 'TASK',
+    drop: (item) => handleMoveTask(item)
 
-  }, [refList])
+  })
+
+
+  const handleClose = () => setShow(false);
+  const handleShow = () => setShow(true);
 
   function refreshTaskList(value) {
     setRefList(value)
@@ -62,7 +60,7 @@ export default function ContentCard(props) {
   }
 
 
-  async function handleKey (e){
+  async function handleKey(e) {
     if (e.key === 'Escape') {
       setEditTitleGroup(false)
     } else if (e.key === 'Enter') {
@@ -98,11 +96,15 @@ export default function ContentCard(props) {
         </Modal.Footer>
       </Modal>
 
-      <div className="m-3 bg-light text-dark border border-dark rounded-3" style={{ width: "200px" }}>
+      <div
+        className="m-3 bg-light text-dark border border-dark rounded-3"
+        style={{ width: "200px" }}
+        ref={dropRef}
+        >
 
         <div className='p-2 mb-0 bg-primary text-white '>
 
-          <div onClick={() => {setEditTitleGroup(true); setUpdateGroup(props.title); }}>
+          <div onClick={() => { setEditTitleGroup(true); setUpdateGroup(props.title); }}>
             {editTitleGroup ?
               <input
                 value={updateGroup}
@@ -116,14 +118,15 @@ export default function ContentCard(props) {
         </div>
 
         <div className="p-2 m-2" >
-          {taskList?.map((item, index) => {
-            console.log(props.title, item.id)
+          {props?.taskList?.map((item, index) => {
+            if(item.group === props.id){
             return <Card
               key={index}
               body={item.body}
               group={item.group}
               id={item.id}
               refreshTaskList={refreshTaskList} />
+            }
           })
           }
           <div className="mt-3 d-flex justify-content-center">

@@ -1,12 +1,18 @@
 import React from "react"
 import 'bootstrap/dist/css/bootstrap.min.css'
 import Feed from "./components/Feed"
+import {DndProvider} from "react-dnd"
+import { HTML5Backend } from "react-dnd-html5-backend"
 
-export default props => {
+
+function App() {
     return (
-         <div>
-             <Feed/>
-         </div>
+
+         <DndProvider backend = {HTML5Backend}>
+              <Feed/>
+         </DndProvider>
     )
     
 }
+
+export default App

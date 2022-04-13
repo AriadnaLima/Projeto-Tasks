@@ -3,16 +3,19 @@ import './Content.css';
 import ContentCard from "./ContentCard/ContentCard";
 import { Modal, Button } from "react-bootstrap";
 import { createGroup, listGroups, removeGroup } from "../Services/GroupServices/GroupService";
+import {listTasks} from "../Services/TaskServices/TaskService"
 
 
 export default function Content() {
     const [show, setShow] = useState(false);
     const [groupTitle, setGroupTitle] = useState('')
     const [groupList, setGroupList] = useState()
+    const [taskList, setTaskList] = useState()
     const [refList, setRefList] = useState(true)
 
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
+
 
     async function handleList() {
         if (refList) {
@@ -23,12 +26,21 @@ export default function Content() {
         }
     }
 
+    async function handleListTask() {
+        if (refList) {
+          const resp = await listTasks();
+          setTaskList(resp)
+    
+        }
+      }
 
     useEffect(() => {
         handleList()
-
     }, [refList])
 
+    useEffect(() => {
+        handleListTask()
+    }, [])
 
 
     function refreshGroupList(value) {
@@ -44,6 +56,15 @@ export default function Content() {
         setGroupTitle('')
         setRefList(true)
     }
+
+    function moveTask(task, groupId){
+        let newArray = [...taskList]
+        const index = newArray.map(object => object.id).indexOf(task.id)
+        newArray[index] = {...newArray[index], group: groupId}
+        setTaskList(newArray)
+    }
+
+
 
     return (
         <div className="body-content">
@@ -78,7 +99,9 @@ export default function Content() {
                         key={index} 
                         title={item.title} 
                         id={item.id} 
-                        refreshGroupList={refreshGroupList} />
+                        refreshGroupList={refreshGroupList}
+                        taskList={taskList}
+                        moveTask={moveTask} />
                     })
                 }
                 <div className="m-3">

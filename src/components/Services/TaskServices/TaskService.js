@@ -15,7 +15,9 @@ export const createTask = async (data) => {
 
 export const listTasks = async (id) => { 
     try{
-        const taskByGroup = query(collection(db, "tasks"),where("group", "==", id))
+        const taskByGroup = query(collection(db, "tasks"),
+        // where("group", "==", id)
+        )
         const resp = await getDocs(taskByGroup)
 
         return resp.docs.map(doc => {
@@ -41,6 +43,17 @@ export const editTask = async (data) => {
     try {
         await updateDoc(doc(db, 'tasks', data.id), {
             body: data.body
+        })
+    }catch(err) { 
+        console.log(err)
+    }
+}
+
+
+export const moveTask = async (data) => {
+    try {
+        await updateDoc(doc(db, 'tasks', data.id), {
+            group: data.group
         })
     }catch(err) { 
         console.log(err)

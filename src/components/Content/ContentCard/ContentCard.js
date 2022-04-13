@@ -8,6 +8,7 @@ import { createTask, listTasks, moveTask, removeTask } from "../../Services/Task
 
 export default function ContentCard(props) {
   const [show, setShow] = useState(false);
+  const [showM, setShowM] = useState(false);
   const [taskBody, setTaskBody] = useState('')
   const [updateGroup, setUpdateGroup] = useState()
   const [editTitleGroup, setEditTitleGroup] = useState(false)
@@ -28,7 +29,9 @@ export default function ContentCard(props) {
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
 
-  
+  const handleCloseM = () => setShowM(false);
+  const handleShowM = () => setShowM(true);
+
 
   //Informar para o pai(Content) atualizar a listagem de grupos 
   async function handleRemoveGroup() {
@@ -93,11 +96,33 @@ export default function ContentCard(props) {
         </Modal.Footer>
       </Modal>
 
+      <Modal show={showM} onHide={handleCloseM}>
+        <Modal.Header closeButton>
+          <Modal.Title>Deseja excluir o Grupo?</Modal.Title>
+        </Modal.Header>
+        {/* <Modal.Body>
+              </Modal.Body> */}
+        <Modal.Footer>
+
+          <Button variant="secondary" onClick={() => {
+            handleCloseM();
+          }}>Voltar
+          </Button>
+
+          <Button variant="primary" onClick={() => {
+            handleCloseM();
+            handleRemoveGroup();
+          }}> Excluir
+          </Button>
+
+        </Modal.Footer>
+      </Modal>
+
       <div
         className="m-3 bg-light text-dark border border-dark rounded-3"
         style={{ width: "200px" }}
         ref={dropRef}
-        >
+      >
 
         <div className='p-2 mb-0 bg-primary text-white '>
 
@@ -112,22 +137,26 @@ export default function ContentCard(props) {
               /> :
               props.title}
 
-            <CloseButton 
-            variant="white" 
-            aria-label="Hide" 
-            style={{ float: "right" }} 
-            onClick={handleRemoveGroup} /></div>
+            <CloseButton
+              variant="white"
+              aria-label="Hide"
+              style={{ float: "right" }}
+              onClick={handleShowM}>
+            </CloseButton>
+
+
+          </div>
         </div>
 
         <div className="p-2 m-2" >
           {props?.taskList?.map((item, index) => {
-            if(item.group === props.id){
-            return <Card
-              key={index}
-              body={item.body}
-              group={item.group}
-              id={item.id}
-              refreshTaskList={props.refreshTaskList} />
+            if (item.group === props.id) {
+              return <Card
+                key={index}
+                body={item.body}
+                group={item.group}
+                id={item.id}
+                refreshTaskList={props.refreshTaskList} />
             }
           })
           }
